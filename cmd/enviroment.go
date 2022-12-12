@@ -33,7 +33,7 @@ func validateEnvironments() error {
 	if strings.TrimSpace(os.Getenv("DB_NAME")) == "" {
 		return errors.New("DB NAME is not set")
 	}
-	if strings.TrimSpace((os.Getenv("DB_SSL_MODE"))) == "" {
+	if strings.TrimSpace(os.Getenv("DB_SSL_MODE")) == "" {
 		return errors.New("DB_SSL_MODE is not set")
 	}
 
