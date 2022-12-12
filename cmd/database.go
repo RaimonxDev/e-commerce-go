@@ -27,7 +27,7 @@ func newDbConnection() (*sqlx.DB, error) {
 	name := os.Getenv("DB_NAME")
 
 	url := makeDNS(user, password, host, port, name)
-	DB, err := sqlx.ConnectContext(context.Background(), "psql", url)
+	DB, err := sqlx.ConnectContext(context.Background(), "postgres", url)
 	if minConnEnv != "" {
 		v, err := strconv.Atoi(minConnEnv)
 		if err != nil {
@@ -61,11 +61,11 @@ func newDbConnection() (*sqlx.DB, error) {
 
 func makeDNS(user, password, host, port, name string) string {
 	connectionString := fmt.Sprintf(
-		"%s:%s@tcp(%s:%s)/%s?parseTime=true",
-		user,
-		password,
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		host,
 		port,
+		user,
+		password,
 		name,
 	)
 	return connectionString
