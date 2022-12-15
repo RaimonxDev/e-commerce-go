@@ -11,15 +11,15 @@ import (
 )
 
 var (
-	// DBMinConn is the minimum number of connections in the pool
-	DBMinConn = 3
-	//DBMaxConn is the maximum number of connections in the pool
-	DBMaxConn = 100
+	// DefaultDbMinConnexion is the minimum number of connections in the pool
+	DefaultDbMinConnexion = 3
+	//DefaultDbMaxConnexion is the maximum number of connections in the pool
+	DefaultDbMaxConnexion = 100
 )
 
 func newDbConnection() (*sqlx.DB, error) {
-	minConnEnv := os.Getenv("DB_MIN_CONN")
-	maxConnEnv := os.Getenv("DB_MAX_CONN")
+	minConnEnv := os.Getenv("DB_MIN_CONNEXION")
+	maxConnEnv := os.Getenv("DB_MAX_CONNEXION")
 	user := os.Getenv("DB_USER")
 	password := os.Getenv("DB_PASSWORD")
 	host := os.Getenv("DB_HOST")
@@ -28,34 +28,37 @@ func newDbConnection() (*sqlx.DB, error) {
 
 	url := makeDNS(user, password, host, port, name)
 	DB, err := sqlx.ConnectContext(context.Background(), "postgres", url)
+
 	if minConnEnv != "" {
 		v, err := strconv.Atoi(minConnEnv)
+
 		if err != nil {
-			log.Println("warning: DB_MIN_CONN is not a number, using default value", DBMinConn)
+			DB.SetMaxIdleConns(DefaultDbMinConnexion)
+			log.Println("warning: DB_MIN_CONN is not a number, using default value", DefaultDbMinConnexion)
 		}
-		if v > DBMaxConn {
-			log.Println("warning: DB_MIN_CONN is greater than DB_MAX_CONN, using default value", DBMinConn)
+		if v > DefaultDbMaxConnexion {
+			DB.SetMaxIdleConns(DefaultDbMinConnexion)
+			log.Println("warning: DB_MIN_CONN is greater than DB_MAX_CONN, using default value", DefaultDbMinConnexion)
 		}
-		if v >= DBMinConn && v <= DBMaxConn {
-			DBMinConn = v
+		if v >= DefaultDbMinConnexion && v <= DefaultDbMaxConnexion {
+			DB.SetMaxIdleConns(v)
 		}
 
 	}
 	if maxConnEnv != "" {
 		v, err := strconv.Atoi(maxConnEnv)
 		if err != nil {
-			log.Println("warning: DB_MAX_CONN is not a number, using default value", DBMaxConn)
+			DB.SetMaxOpenConns(DefaultDbMaxConnexion)
+			log.Println("warning: DB_MAX_CONN is not a number, using default value", DefaultDbMaxConnexion)
 		}
-		if v < DBMinConn {
-			log.Println("warning: DB_MAX_CONN is less than DB_MIN_CONN, using default value", DBMaxConn)
+		if v < DefaultDbMinConnexion {
+			DB.SetMaxOpenConns(DefaultDbMaxConnexion)
+			log.Println("warning: DB_MAX_CONN is less than DB_MIN_CONN, using default value", DefaultDbMaxConnexion)
 		}
-		if v >= DBMinConn && v <= DBMaxConn {
-			DBMaxConn = v
+		if v >= DefaultDbMinConnexion && v <= DefaultDbMaxConnexion {
+			DB.SetMaxOpenConns(v)
 		}
 	}
-
-	DB.SetMaxIdleConns(DBMinConn)
-	DB.SetMaxOpenConns(DBMaxConn)
 	return DB, err
 }
 
