@@ -2,6 +2,7 @@ package user
 
 import (
 	"github.com/RaimonxDev/e-commerce-go.git/domain/user"
+	"github.com/RaimonxDev/e-commerce-go.git/infrastructure/handler/response"
 	"github.com/RaimonxDev/e-commerce-go.git/model"
 	"github.com/labstack/echo/v4"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 
 type handler struct {
 	userCase user.UseCase
+	Response response.API
 }
 
 func newHandler(uc user.UseCase) handler {
@@ -19,14 +21,13 @@ func (h *handler) Create(c echo.Context) error {
 	m := model.User{}
 	// Bind request to model
 	if err := c.Bind(&m); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return h.Response.BindFailed(err)
 	}
 	// Create user
 	if err := h.userCase.Create(&m); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Error creating user"})
+		return h.Response.Error(c, "UseCase Create()", err)
 	}
-	return c.JSON(http.StatusCreated, m)
-
+	return c.JSON(h.Response.Created(m))
 }
 
 func (h *handler) GetAll(c echo.Context) error {
@@ -41,7 +42,7 @@ func (h *handler) GetByEmail(c echo.Context) error {
 	email := c.Param("email")
 	user, err := h.userCase.GetByEmail(email)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Error "})
+		return h.Response.Error(c, "UseCase GetByEmail()", err)
 	}
-	return c.JSON(http.StatusOK, user)
+	return c.JSON(h.Response.OK(user))
 }
