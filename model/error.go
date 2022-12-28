@@ -1,6 +1,13 @@
 package model
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
+
+var (
+	ErrorInvalidID = errors.New("invalid id")
+)
 
 type Error struct {
 	Code       string
