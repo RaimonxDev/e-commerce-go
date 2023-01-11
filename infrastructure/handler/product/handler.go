@@ -1,12 +1,13 @@
 package product
 
 import (
+	"strconv"
+
 	"github.com/RaimonxDev/e-commerce-go.git/domain/product"
 	"github.com/RaimonxDev/e-commerce-go.git/infrastructure/handler/response"
 	"github.com/RaimonxDev/e-commerce-go.git/model"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	"strconv"
 )
 
 type handler struct {
@@ -72,20 +73,22 @@ func (h *handler) Delete(c echo.Context) error {
 }
 
 func (h *handler) GetAll(c echo.Context) error {
-
 	// Pagination
 	// Page
 	page, err := strconv.Atoi(c.QueryParam("page"))
 	if err != nil {
-		page = 1 // Default page
+		page = 0
 	}
 	// Limit
 	limit, err := strconv.Atoi(c.QueryParam("limit"))
 	if err != nil {
-		limit = 10 // Default limit
+		limit = 0
 	}
-
-	products, err := h.useCase.GetAll()
+	pag := model.Pagination{
+		Page:  page,
+		Limit: limit,
+	}
+	products, err := h.useCase.GetAll(pag)
 	if err != nil {
 		return h.response.Error(c, "UseCase GetAll()", err)
 	}

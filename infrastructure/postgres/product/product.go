@@ -3,6 +3,7 @@ package product
 import (
 	"context"
 	"fmt"
+
 	"github.com/RaimonxDev/e-commerce-go.git/infrastructure/postgres"
 	"github.com/RaimonxDev/e-commerce-go.git/model"
 	"github.com/google/uuid"
@@ -35,7 +36,7 @@ type Product struct {
 	db *sqlx.DB
 }
 
-func New(db *sqlx.DB) *Product {
+func NewRepository(db *sqlx.DB) *Product {
 	return &Product{db: db}
 }
 
@@ -78,9 +79,13 @@ func (p Product) Delete(id uuid.UUID) error {
 	return err
 }
 
-func (p Product) GetAll() (model.Products, error) {
+func (p Product) GetAll(pag model.Pagination) (model.Products, error) {
+
 	var pp model.Products
-	err := p.db.SelectContext(context.Background(), &pp, psqlGetAll)
+	postgres.DefaultPagination(&pag)
+	offset := (pag.Page - 1) * pag.Limit
+	// Add pagination
+	err := p.db.SelectContext(context.Background(), &pp, psqlGetAll+"LIMIT $1 OFFSET $2", pag.Limit, offset)
 	return pp, err
 }
 

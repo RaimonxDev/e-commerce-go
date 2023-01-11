@@ -2,17 +2,18 @@ package user
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/RaimonxDev/e-commerce-go.git/model"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
-	"time"
 )
 
 type User struct {
 	Repository Repository
 }
 
-func New(r Repository) User {
+func NewUserCase(r Repository) User {
 	return User{Repository: r}
 }
 

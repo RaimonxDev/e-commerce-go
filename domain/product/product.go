@@ -10,7 +10,7 @@ type UseCase interface {
 	Update(m *model.Product) error
 	Delete(ID uuid.UUID) error
 
-	GetAll() (model.Products, error)
+	GetAll(pagination model.Pagination) (model.Products, error)
 	GetByID(ID uuid.UUID) (model.Product, error)
 }
 
@@ -19,6 +19,6 @@ type Repository interface {
 	Update(m *model.Product) error
 	Delete(ID uuid.UUID) error
 
-	GetAll() (model.Products, error)
+	GetAll(pagination model.Pagination) (model.Products, error)
 	GetByID(ID uuid.UUID) (model.Product, error)
 }

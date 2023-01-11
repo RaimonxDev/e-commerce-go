@@ -15,7 +15,7 @@ func NewRouter(e *echo.Echo, dbPool *sqlx.DB) {
 
 func buildHandler(dbPool *sqlx.DB) handler {
 	repository := repositoryUser.New(dbPool)
-	useCase := user.New(repository)
+	useCase := user.NewUserCase(repository)
 	return newHandler(&useCase)
 }
 

@@ -2,16 +2,17 @@ package product
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/RaimonxDev/e-commerce-go.git/model"
 	"github.com/google/uuid"
-	"time"
 )
 
 type Product struct {
 	Repository Repository
 }
 
-func new(r Repository) Product {
+func NewProductUseCase(r Repository) Product {
 	return Product{Repository: r}
 }
 
@@ -75,8 +76,8 @@ func (p *Product) Delete(ID uuid.UUID) error {
 	return nil
 }
 
-func (p *Product) GetAll() (model.Products, error) {
-	return p.Repository.GetAll()
+func (p *Product) GetAll(pag model.Pagination) (model.Products, error) {
+	return p.Repository.GetAll(pag)
 }
 
 func (p *Product) GetByID(ID uuid.UUID) (model.Product, error) {
