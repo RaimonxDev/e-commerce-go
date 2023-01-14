@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/RaimonxDev/e-commerce-go.git/infrastructure/handler/response"
 	"log"
 	"os"
+
+	"github.com/RaimonxDev/e-commerce-go.git/infrastructure/handler/response"
 )
 
 func main() {
@@ -25,7 +26,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	_ = db
+	// init migration
+	err = runMigrationDB(db)
+	if err != nil {
+		log.Fatalf("error while running migration: %v", err)
+	}
+
+	// Run Server
 	err = e.Start(":" + os.Getenv("SERVER_PORT"))
 
 	if err != nil {
