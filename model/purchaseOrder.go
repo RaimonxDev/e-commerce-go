@@ -16,6 +16,7 @@ type PurchaseOrder struct {
 	Updated_at int64           `json:"updated_at"`
 }
 
+// Validar los datos de la orden de compra antes de guardarla en la base de datos
 func (p PurchaseOrder) Validate() error {
 	if p.UserID == uuid.Nil {
 		return errors.New("user_id is required")
@@ -25,6 +26,7 @@ func (p PurchaseOrder) Validate() error {
 	}
 	selectedProducts := []ProductToPurchase{}
 
+	// IMPORTANT: Unmarshal the json.RawMessage to a slice of ProductToPurchase
 	if err := json.Unmarshal(p.Products, &selectedProducts); err != nil {
 		log.Fatalf("%s %v", "json.Unmarshal()", err)
 	}
@@ -44,8 +46,28 @@ func (p PurchaseOrder) Validate() error {
 
 }
 
+func (p PurchaseOrder) TotalAmmount() float64 {
+	purchase := []ProductToPurchase{}
+	total := 0.0
+	if err := json.Unmarshal(p.Products, &p); err != nil {
+		log.Fatalf("%s %v", "json.Unmarshal() in totalAmmount()", err)
+	}
+
+	for _, v := range purchase {
+		total += v.Amount * v.UnitPrice
+	}
+
+	return total
+
+}
+
 type ProductToPurchase struct {
 	ProductID uuid.UUID `json:"product_id"`
 	UnitPrice float64   `json:"unit_price"`
 	Amount    float64   `json:"amount"`
+}
+
+type ValidatedProduct struct {
+	ProductID uuid.UUID `json:"product_id"`
+	UnitPrice float64   `json:"unity_price"`
 }
