@@ -1,8 +1,0 @@
-CREATE TABLE IF NOT EXISTS purchase_orders (
-	id UUID NOT NULL,
-	userID UUID NOT NULL,
-	created_at INTEGER NOT NULL DEFAULT EXTRACT(EPOCH FROM now())::INT,
-	updated_at INTEGER,
-	CONSTRAINT purchase_orders_id_pk PRIMARY KEY (id),
-	CONSTRAINT purchase_orders_userID_fk FOREIGN KEY (userID) REFERENCES users(id) ON DELETE RESTRICT ON UPDATE RESTRICT
-)
