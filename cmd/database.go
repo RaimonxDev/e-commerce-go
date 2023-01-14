@@ -3,11 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
 	"log"
 	"os"
 	"strconv"
+
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 )
 
 var (
@@ -27,8 +28,11 @@ func newDbConnection() (*sqlx.DB, error) {
 	name := os.Getenv("DB_NAME")
 
 	url := makeDNS(user, password, host, port, name)
-	DB, err := sqlx.ConnectContext(context.Background(), "postgres", url)
 
+	DB, err := sqlx.ConnectContext(context.Background(), "postgres", url)
+	if err != nil {
+		return nil, fmt.Errorf("error while connecting to database: %w ", err)
+	}
 	if minConnEnv != "" {
 		v, err := strconv.Atoi(minConnEnv)
 
